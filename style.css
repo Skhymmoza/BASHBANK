@@ -1,0 +1,45 @@
+:root {
+    --primary: #007A5E; /* Башкирский зеленый */
+    --accent: #29B6F6; /* Голубой - цветок курая */
+    --bg: #F4F7F6;
+    --card-bg: #FFFFFF;
+    --text: #333;
+    --danger: #e74c3c;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+body { background: var(--bg); color: var(--text); display: flex; justify-content: center; min-height: 100vh; }
+
+.app-container { width: 100%; max-width: 480px; background: var(--card-bg); box-shadow: 0 0 20px rgba(0,0,0,0.05); overflow: hidden; position: relative; }
+
+/* Screens */
+.screen { display: none; padding: 20px; animation: fadeIn 0.3s; height: 100%; }
+.screen.active { display: block; }
+
+/* Components */
+.logo { font-size: 24px; font-weight: 800; color: var(--primary); text-align: center; margin-bottom: 30px; letter-spacing: 1px; }
+.btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; margin-top: 10px; font-weight: 600; }
+.input-group { margin-bottom: 15px; }
+input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; background: #fafafa; font-size: 16px; outline: none; }
+input:focus { border-color: var(--primary); }
+
+/* Bank Card UI */
+.bank-card {
+    background: linear-gradient(135deg, #007A5E, #004D40);
+    color: white; padding: 25px; border-radius: 16px; margin-bottom: 25px;
+    box-shadow: 0 10px 20px rgba(0,122,94,0.3);
+}
+.balance-label { font-size: 14px; opacity: 0.8; }
+.balance-val { font-size: 32px; font-weight: 700; margin: 5px 0 20px; }
+.card-num { font-family: 'Courier Prime', monospace; font-size: 18px; letter-spacing: 2px; }
+
+/* Actions */
+.actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+.action-btn { background: #f0f2f5; border: none; padding: 15px; border-radius: 12px; color: var(--text); font-weight: 600; cursor: pointer; }
+
+/* History */
+.tx-item { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #eee; }
+.tx-amount.income { color: var(--primary); }
+.tx-amount.outcome { color: var(--text); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
