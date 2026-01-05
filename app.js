@@ -1,153 +1,108 @@
-const API_URL = 'api'; // Относительный путь, так как api лежит рядом
-
 const app = {
     token: localStorage.getItem('token'),
     
-    init: () => {
-        if (app.token) {
-            app.loadDashboard();
-        }
+    // API запрос (теперь через ?act=)
+    api: async (act, data = {}) => {
+        const headers = { 'Content-Type': 'application/json' };
+        if (app.token) headers['Authorization'] = `Bearer ${app.token}`;
+        
+        const method = Object.keys(data).length > 0 ? 'POST' : 'GET';
+        
+        try {
+            const r = await fetch(`api.php?act=${act}`, {
+                method, headers, body: method === 'POST' ? JSON.stringify(data) : null
+            });
+            return await r.json();
+        } catch(e) { alert('Ошибка сети'); return {}; }
     },
 
-    // --- Navigation ---
-    showScreen: (id) => {
+    // Навигация
+    nav: (id) => {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     },
 
-    toggleAuth: () => {
-        const current = document.querySelector('.screen.active').id;
-        app.showScreen(current === 'screen-auth' ? 'screen-reg' : 'screen-auth');
+    init: () => {
+        if(app.token) app.loadDash();
+        else app.nav('auth');
     },
 
-    showDash: () => {
-        app.showScreen('screen-dash');
-        app.loadDashboard();
-    },
+    toReg: () => app.nav('reg'),
+    toAuth: () => app.nav('auth'),
+    showTransfer: () => app.nav('transfer'),
 
-    showTransfer: () => {
-        app.showScreen('screen-transfer');
-    },
-
-    // --- API Calls ---
-    async request(endpoint, method = 'GET', data = null) {
-        const headers = { 'Content-Type': 'application/json' };
-        if (app.token) headers['Authorization'] = `Bearer ${app.token}`;
-        
-        try {
-            const res = await fetch(`${API_URL}/${endpoint}`, {
-                method,
-                headers,
-                body: data ? JSON.stringify(data) : null
-            });
-            return await res.json();
-        } catch (e) {
-            alert('Ошибка соединения');
-            return null;
-        }
-    },
-
-    // --- Actions ---
+    // Действия
     login: async () => {
-        const login = document.getElementById('login-user').value;
-        const pass = document.getElementById('login-pass').value;
+        const login = document.getElementById('l-login').value;
+        const pass = document.getElementById('l-pass').value;
+        const res = await app.api('login', {login, password: pass});
         
-        const res = await app.request('login', 'POST', { login, password: pass });
-        if (res && res.token) {
+        if(res.token) {
             app.token = res.token;
             localStorage.setItem('token', res.token);
-            app.loadDashboard();
-        } else {
-            alert('Неверный логин или пароль');
-        }
+            app.loadDash();
+        } else alert(res.error || 'Ошибка входа');
     },
 
     register: async () => {
-        const fullName = document.getElementById('reg-name').value;
-        const login = document.getElementById('reg-login').value;
-        const phone = document.getElementById('reg-phone').value;
-        const pass = document.getElementById('reg-pass').value;
-
-        if(!fullName || !login || !pass) return alert("Заполните все поля");
-
-        const res = await app.request('register', 'POST', { 
-            full_name: fullName, login, phone, password: pass 
-        });
-
-        if (res && res.status === 'success') {
-            alert('Успешно! Теперь войдите.');
-            app.toggleAuth();
-        } else {
-            alert('Ошибка регистрации (возможно логин занят)');
-        }
+        const data = {
+            full_name: document.getElementById('r-name').value,
+            login: document.getElementById('r-login').value,
+            phone: document.getElementById('r-phone').value,
+            password: document.getElementById('r-pass').value
+        };
+        if(!data.full_name || !data.password) return alert('Заполните поля');
+        
+        const res = await app.api('register', data);
+        if(res.status === 'success') {
+            alert('Рәхим итегез! (Добро пожаловать). Теперь войдите.');
+            app.toAuth();
+        } else alert(res.error || 'Ошибка');
     },
 
-    logout: () => {
-        localStorage.removeItem('token');
-        app.token = null;
-        app.showScreen('screen-auth');
-    },
-
-    loadDashboard: async () => {
-        const user = await app.request('me');
-        if (!user || user.error) return app.logout();
-
-        document.getElementById('user-name').innerText = user.full_name;
-        // Маскировка карты
-        const num = user.card_number;
-        const masked = `${num.substring(0,4)} **** **** ${num.substring(12)}`;
-        document.getElementById('card-number').innerText = masked;
-        document.getElementById('card-balance').innerText = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(user.balance);
-
-        app.showScreen('screen-dash');
+    loadDash: async () => {
+        const user = await app.api('me');
+        if(!user.full_name) return app.logout();
+        
+        document.getElementById('u-name').innerText = user.full_name;
+        document.getElementById('u-bal').innerText = new Intl.NumberFormat('ru-RU').format(user.balance) + ' ₽';
+        document.getElementById('u-card').innerText = user.card_number;
+        
+        app.nav('dash');
         app.loadHistory();
     },
 
     loadHistory: async () => {
-        const txs = await app.request('history');
-        const container = document.getElementById('tx-history');
-        container.innerHTML = '';
-
-        if(txs && txs.length) {
-            txs.forEach(tx => {
-                const isIncome = tx.direction === 'income';
-                const sign = isIncome ? '+' : '-';
-                const colorClass = isIncome ? 'income' : 'outcome';
-                
-                const html = `
-                    <div class="tx-item">
-                        <div>
-                            <div style="font-weight:600">${tx.description || 'Перевод'}</div>
-                            <div style="font-size:12px; color:#999">${tx.created_at}</div>
-                        </div>
-                        <div class="tx-amount ${colorClass}">${sign} ${tx.amount} ₽</div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', html);
-            });
-        } else {
-            container.innerHTML = '<div style="text-align:center; padding:20px; color:#999">Операций пока нет</div>';
-        }
+        const txs = await app.api('history');
+        const box = document.getElementById('history-list');
+        box.innerHTML = '';
+        txs.forEach(t => {
+            const sign = t.type === 'income' ? '+' : '-';
+            const cls = t.type;
+            box.innerHTML += `
+                <div class="tx-item">
+                    <div><b>${t.description}</b><br><small>${t.created_at}</small></div>
+                    <div class="${cls}"><b>${sign} ${t.amount} ₽</b></div>
+                </div>`;
+        });
     },
 
-    makeTransfer: async () => {
-        const toCard = document.getElementById('tx-to').value;
-        const amount = document.getElementById('tx-amount').value;
+    doTransfer: async () => {
+        const to = document.getElementById('t-card').value;
+        const sum = document.getElementById('t-sum').value;
+        if(!to || !sum) return;
 
-        if (!toCard || !amount) return alert('Заполните поля');
+        const res = await app.api('transfer', {to_card: to, amount: sum});
+        if(res.status === 'success') {
+            alert('Перевод выполнен!');
+            app.loadDash();
+        } else alert(res.error || 'Ошибка');
+    },
 
-        const res = await app.request('transfer', 'POST', { to_card: toCard, amount });
-        
-        if (res && res.status === 'success') {
-            alert('Перевод выполнен успешно!');
-            document.getElementById('tx-to').value = '';
-            document.getElementById('tx-amount').value = '';
-            app.showDash();
-        } else {
-            alert('Ошибка: ' + (res.error || 'Неизвестная ошибка'));
-        }
+    logout: () => {
+        localStorage.removeItem('token');
+        location.reload();
     }
 };
 
-// Start
 app.init();
