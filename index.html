@@ -3,66 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>БАШБАНК | Онлайн</title>
+    <title>БАШБАНК</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <div id="screen-auth" class="screen active">
-            <div class="logo">БАШБАНК</div>
-            <div class="input-group">
-                <input type="text" id="login-user" placeholder="Логин">
-            </div>
-            <div class="input-group">
-                <input type="password" id="login-pass" placeholder="Пароль">
-            </div>
-            <button class="btn" onclick="app.login()">Войти</button>
-            <button class="btn" style="background:transparent; color:#666;" onclick="app.toggleAuth()">Нет аккаунта? Регистрация</button>
+    <div class="app">
+        <div class="kurai-header">
+            <div class="logo-text">⚜ БАШБАНК</div>
+            <div class="logo-sub">Национальный банк</div>
         </div>
 
-        <div id="screen-reg" class="screen">
-            <div class="logo">РЕГИСТРАЦИЯ</div>
-            <input type="text" id="reg-name" placeholder="ФИО" class="input-group">
-            <input type="text" id="reg-login" placeholder="Придумайте логин" class="input-group">
-            <input type="tel" id="reg-phone" placeholder="Телефон" class="input-group">
-            <input type="password" id="reg-pass" placeholder="Пароль" class="input-group">
-            <button class="btn" onclick="app.register()">Открыть карту</button>
-            <button class="btn" style="background:transparent; color:#666;" onclick="app.toggleAuth()">Назад</button>
+        <div id="auth" class="screen active">
+            <h2 style="text-align:center; color:var(--bash-green)">Салам! 👋</h2>
+            <p style="text-align:center; color:#666; margin-bottom:30px;">Войдите в личный кабинет</p>
+            
+            <input type="text" id="l-login" placeholder="Логин">
+            <input type="password" id="l-pass" placeholder="Пароль">
+            
+            <button class="btn btn-primary" onclick="app.login()">Войти</button>
+            <button class="btn" style="background:transparent; color:#666; margin-top:10px" onclick="app.toReg()">Нет аккаунта? Создать</button>
         </div>
 
-        <div id="screen-dash" class="screen">
-            <div class="header" style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <span style="font-weight:600">Привет, <span id="user-name">Client</span></span>
-                <a href="#" onclick="app.logout()" style="color:var(--danger); text-decoration:none;">Выйти</a>
-            </div>
-
-            <div class="bank-card">
-                <div class="balance-label">Баланс карты</div>
-                <div class="balance-val" id="card-balance">0.00 ₽</div>
-                <div class="card-num" id="card-number">2200 **** **** 0000</div>
-            </div>
-
-            <div class="actions-grid">
-                <button class="action-btn" onclick="app.showTransfer()">➤ Перевод</button>
-                <button class="action-btn" onclick="alert('Эмуляция: Счет пополнен через СБП!')">✚ Пополнить</button>
-            </div>
-
-            <h3 style="margin-bottom:15px;">История операций</h3>
-            <div id="tx-history">
-                </div>
+        <div id="reg" class="screen">
+            <h2 style="text-align:center">Яңы клиент</h2>
+            <input type="text" id="r-name" placeholder="ФИО">
+            <input type="text" id="r-login" placeholder="Придумайте логин">
+            <input type="tel" id="r-phone" placeholder="Телефон">
+            <input type="password" id="r-pass" placeholder="Пароль">
+            
+            <button class="btn btn-accent" onclick="app.register()">Открыть карту</button>
+            <button class="btn" style="background:transparent" onclick="app.toAuth()">Назад</button>
         </div>
 
-        <div id="screen-transfer" class="screen">
-            <h3>Перевод клиенту</h3>
-            <br>
-            <input type="text" id="tx-to" placeholder="Номер карты (16 цифр)" class="input-group">
-            <input type="number" id="tx-amount" placeholder="Сумма" class="input-group">
-            <button class="btn" onclick="app.makeTransfer()">Перевести</button>
-            <button class="btn" style="background:#eee; color:#333; margin-top:10px;" onclick="app.showDash()">Отмена</button>
+        <div id="dash" class="screen">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <b id="u-name">Клиент</b>
+                <span onclick="app.logout()" style="color:red; cursor:pointer; font-size:14px;">Выход ➜</span>
+            </div>
+
+            <div class="card-visual">
+                <div style="font-size:12px; opacity:0.8">Ваш баланс</div>
+                <div class="balance" id="u-bal">0 ₽</div>
+                <div class="card-num" id="u-card">2202 **** **** 0000</div>
+                <img src="https://img.icons8.com/color/48/000000/mir.png" style="width:40px; position:absolute; bottom:20px; right:20px;">
+            </div>
+
+            <div class="bottom-nav">
+                <button class="btn btn-accent" onclick="app.showTransfer()">➤ Перевод</button>
+                <button class="btn btn-primary" onclick="alert('Пополнение работает через СБП')">✚ Пополнить</button>
+            </div>
+
+            <h3 style="margin-top:25px">История операций</h3>
+            <div id="history-list"></div>
+        </div>
+
+        <div id="transfer" class="screen">
+            <h3>💸 Перевод денег</h3>
+            <p style="color:#666; font-size:14px; margin-bottom:20px;">Комиссия 0% внутри Башкирии</p>
+            
+            <input type="text" id="t-card" placeholder="Номер карты получателя">
+            <input type="number" id="t-sum" placeholder="Сумма (₽)">
+            
+            <button class="btn btn-accent" onclick="app.doTransfer()">Отправить</button>
+            <button class="btn" style="background:#ddd; margin-top:10px;" onclick="app.showDash()">Отмена</button>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
