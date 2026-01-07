@@ -1,144 +1,117 @@
 :root {
-    /* Палитра флага Башкортостана */
-    --bash-green: #007749;  /* Зеленый */
-    --bash-white: #FFFFFF;  /* Белый */
-    --bash-blue: #0077C8;   /* Синий */
-    
-    /* Дополнительные цвета */
-    --honey-gold: #FFC72C;  /* Золото/Мед */
-    --bg-light: #F0F4F2;
-    --text-dark: #1A1A1A;
+    --text-color: #ffffff;
+    --accent: #00ff88; /* Ядовито-зеленый для акцентов */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.15);
+    --blur: blur(15px);
 }
 
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(160deg, var(--bash-green) 0%, #004d30 100%);
     margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(45deg, #1cb5e0, #000046); /* Глубокий синий фон */
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--text-dark);
+    color: var(--text-color);
 }
 
-.app {
-    width: 100%;
-    max-width: 420px;
-    height: 90vh;
-    max-height: 850px;
-    background: var(--bg-light);
-    border-radius: 24px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    overflow-y: auto;
-    position: relative;
-    border: 4px solid var(--bash-white);
+/* Основная карточка */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: var(--glass-border);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
 }
 
-/* Логотип Курай */
-.kurai-header {
-    background: var(--bash-white);
-    padding: 20px;
+.logo {
     text-align: center;
-    border-bottom: 2px solid var(--bash-green);
-}
-
-.logo-text {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 800;
-    color: var(--bash-green);
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow: 0 0 15px rgba(0,255,136,0.6);
+    margin-bottom: 5px;
 }
+.subtitle { text-align: center; font-size: 12px; opacity: 0.7; margin-bottom: 25px; }
 
-.logo-sub {
-    font-size: 12px;
-    color: var(--bash-blue);
-    font-weight: 600;
-}
-
-/* Экраны */
-.screen { display: none; padding: 20px; animation: fade 0.3s; }
-.screen.active { display: block; }
-
-@keyframes fade { from{opacity:0; transform: translateY(10px);} to{opacity:1; transform:translateY(0);} }
-
-/* Формы */
+/* Поля ввода */
 input {
     width: 100%;
     padding: 15px;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
-    background: #fff;
+    color: #fff;
     font-size: 16px;
     box-sizing: border-box;
+    outline: none;
 }
+input:focus { border-color: var(--accent); }
 
-input:focus { outline: none; border-color: var(--bash-blue); }
-
+/* Стеклянные кнопки */
 .btn {
     width: 100%;
-    padding: 16px;
+    padding: 15px;
     border: none;
     border-radius: 12px;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
-    transition: 0.2s;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 10px;
+    transition: 0.3s;
 }
+
+.btn:hover { background: rgba(255,255,255,0.2); }
 
 .btn-primary {
-    background: var(--bash-green);
-    color: white;
+    background: rgba(0, 255, 136, 0.2);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+.btn-primary:hover {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 20px var(--accent);
 }
 
-.btn-accent {
-    background: var(--honey-gold);
-    color: #3d2e00;
-}
+.btn-danger { color: #ff6b6b; margin-top: 10px; background: transparent; border: none; }
 
-/* Банковская карта */
-.card-visual {
-    background: linear-gradient(135deg, var(--bash-green), var(--bash-blue));
-    color: white;
-    padding: 25px;
-    border-radius: 16px;
+/* Элементы интерфейса */
+.balance-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
     margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 10px 20px rgba(0, 119, 73, 0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.balance-val { font-size: 38px; font-weight: bold; margin: 5px 0; }
+.card-num { font-family: monospace; letter-spacing: 2px; opacity: 0.6; }
+
+.history-box { max-height: 200px; overflow-y: auto; margin-top: 10px; }
+.hist-item {
+    display: flex; justify-content: space-between;
+    padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px;
 }
 
-/* Орнамент (условно) */
-.card-visual::after {
-    content: "✿";
-    position: absolute;
-    right: -10px;
-    bottom: -20px;
-    font-size: 120px;
-    opacity: 0.1;
-    transform: rotate(-15deg);
-}
+.screen { display: none; animation: fadeIn 0.4s; }
+.screen.active { display: block; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 
-.balance { font-size: 32px; font-weight: bold; margin: 10px 0; }
-.card-num { font-family: monospace; font-size: 18px; letter-spacing: 2px; }
-
-/* История */
-.tx-item {
-    display: flex;
-    justify-content: space-between;
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+.loader {
+    width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.2);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 1s infinite linear; margin: 10px auto; display: none;
 }
-.income { color: var(--bash-green); }
-.outcome { color: #d32f2f; }
-
-.bottom-nav {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 20px;
-}
+@keyframes spin { to { transform: rotate(360deg); } }
+.status { text-align: center; font-size: 12px; opacity: 0.5; margin-top: 15px; }
